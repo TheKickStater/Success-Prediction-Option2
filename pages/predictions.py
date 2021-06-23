@@ -15,9 +15,9 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing import sequence
 from tensorflow import keras
 
-with open('tokenizer.pickle', 'rb') as handle:
+
+with open('ToSite/tokenizer.pickle', 'rb') as handle:
     tokenizer = pickle.load(handle)
-model = keras.models.load_model('models')
 # Print out prediction
 # print("Model predicted {} with a probability of {}".format(y_pred, y_pred_proba))
 
@@ -37,11 +37,11 @@ model = keras.models.load_model('models')
 )
 def predict(usd_goal,category,timeline,sub_category,text):
     df = pd.DataFrame(
-        columns=['usd_goal',
-        'category',
-        'timeline',
-        'sub_category',
-        'text'
+        columns=[0,
+        1,
+        2,
+        3,
+        4
 ], 
         data=[[timeline,usd_goal,category,text,sub_category]]
         # data=[[usd_goal,category,timeline,sub_category,text]]
@@ -53,12 +53,18 @@ def predict(usd_goal,category,timeline,sub_category,text):
     for j in range(5, 48):
         f = j-5
         df[j] = [padded_sequence[0][f]]
+    df.drop(columns=[3], inplace=True)
     arr = df.to_numpy()
+    print(arr)
     tarr = arr.reshape(1, 47, 1)
     tarr = np.asarray(tarr).astype('float32')
+    model = keras.models.load_model('ToSite/models')
+    print(model.summary())
+    print(arr.shape)
     y_pred_proba = round((model.predict(tarr)[0][0] * 100), 2)
     y_pred = model.predict_classes(tarr)[0][0]
-    return f'{y_pred}'
+    print("---"y_pred"---")
+    return '{}, {}'.format(y_pred, y_pred_proba)
 
 
 column1 = dbc.Col(
@@ -66,7 +72,7 @@ column1 = dbc.Col(
         dcc.Markdown('## Kickstarter Parameters', className='mb-5'), 
         dcc.Markdown('#### How much funding do you need to raise?'), 
         dcc.Input(
-            id="usd_goal", type="number", placeholder="Input Kickstarter Goal",
+            id="usd_goal", type="number", value=1000,
             min=100, max=10000000, step=100, className='mb-5',
         # dcc.Slider(
         #     id='usd_goal', 
@@ -79,7 +85,7 @@ column1 = dbc.Col(
         ), 
         dcc.Markdown('#### How long will your project be open for funding?'),
         dcc.Input(
-            id="timeline", type="number", placeholder="Input the number of days funding will be open",
+            id="timeline", type="number", value=30,
             min=10, max=365, step=10, className='mb-5',
         # dcc.Slider(
         #     id='timeline', 
