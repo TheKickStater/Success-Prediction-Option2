@@ -8,8 +8,21 @@ from dash.dependencies import Input, Output
 from .newpage import sub_category_list
 # Imports from this application
 from app import app
-from joblib import load
-pipeline = load("assets/model.joblib")
+import pickle, json
+import pandas as pd
+import numpy as np
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing import sequence
+from tensorflow import keras
+
+with open('tokenizer.pickle', 'rb') as handle:
+    tokenizer = pickle.load(handle)
+model = keras.models.load_model('models')
+# Print out prediction
+# print("Model predicted {} with a probability of {}".format(y_pred, y_pred_proba))
+
+# [Timeline, goal, cat, text, subcat]
+
 
 # 2 column layout. 1st column width = 4/12
 # https://dash-bootstrap-components.opensource.faculty.ai/l/components/layout
@@ -22,21 +35,29 @@ pipeline = load("assets/model.joblib")
     Input('text', 'value'),
     ],
 )
-def predict(usd_goal,category,timeline,sub_category,
-text
-):
+def predict(usd_goal,category,timeline,sub_category,text):
     df = pd.DataFrame(
         columns=['usd_goal',
         'category',
         'timeline',
         'sub_category',
-        'text',
+        'text'
 ], 
-        data=[[usd_goal, category,timeline,sub_category,
-       text
-        ]]
+        data=[[timeline,usd_goal,category,text,sub_category]]
+        # data=[[usd_goal,category,timeline,sub_category,text]]
     )
-    y_pred = pipeline.predict(df)[0]
+    maxlen = 43 # Somewhat arbitrary at this point, neccessary however
+    seq = tokenizer.texts_to_sequences(df[3])
+    # seq2 = [i for s in seq for i in s]
+    padded_sequence = sequence.pad_sequences(seq, maxlen)
+    for j in range(5, 48):
+        f = j-5
+        df[j] = [padded_sequence[0][f]]
+    arr = df.to_numpy()
+    tarr = arr.reshape(1, 47, 1)
+    tarr = np.asarray(tarr).astype('float32')
+    y_pred_proba = round((model.predict(tarr)[0][0] * 100), 2)
+    y_pred = model.predict_classes(tarr)[0][0]
     return f'{y_pred}'
 
 
@@ -157,3 +178,4 @@ column3 = dbc.Col(
 
 
 layout = dbc.Row([column1, column2, column3])
+
