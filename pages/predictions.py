@@ -67,12 +67,12 @@ def predict(usd_goal,category,timeline,sub_category,text):
     print(model.summary())
     print(arr.shape)
     y_pred_proba = round((model.predict(tarr)[0][0] * 100), 2)
-    if(y_pred_proba) >= 0.5:
-        y_pred = 1
+    if(y_pred_proba) >= 50:
+        y_pred = "Success predicted"
     else:
-        y_pred = 0
+        y_pred = "Lack of success predicted"
 
-    return '{}, {}'.format(y_pred, y_pred_proba)
+    return '{}, with a likelihood of {}%'.format(y_pred, y_pred_proba)
 
 
 column1 = dbc.Col(
