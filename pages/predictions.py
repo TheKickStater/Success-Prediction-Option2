@@ -63,7 +63,6 @@ def predict(usd_goal,category,timeline,sub_category,text):
     print(arr.shape)
     y_pred_proba = round((model.predict(tarr)[0][0] * 100), 2)
     y_pred = model.predict_classes(tarr)[0][0]
-    print("---"y_pred"---")
     return '{}, {}'.format(y_pred, y_pred_proba)
 
 
