@@ -16,7 +16,7 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing import sequence
 from tensorflow import keras
 
-
+# Unpickling tokenizer
 with open('ToSite/tokenizer.pickle', 'rb') as handle:
     tokenizer = pickle.load(handle)
 # Print out prediction
@@ -60,12 +60,14 @@ def predict(usd_goal,category,timeline,sub_category,text):
     # Convert df to numpy array, for further conversion to tensor
     arr = df.to_numpy()
     print(arr)  # DEV, delete before prod
-    # Reshape array into 
+    # Reshape array into tensor
     tarr = arr.reshape(1, 47, 1)
     tarr = np.asarray(tarr).astype('float32')
+    # Loading in the model
     model = keras.models.load_model('ToSite/models')
     print(model.summary())
     print(arr.shape)
+    # Formatting output from the model
     y_pred_proba = round((model.predict(tarr)[0][0] * 100), 2)
     if(y_pred_proba) >= 50:
         y_pred = "Success predicted"
