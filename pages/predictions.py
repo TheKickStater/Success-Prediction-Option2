@@ -20,22 +20,6 @@ from tensorflow import keras
 with open('ToSite/tokenizer.pickle', 'rb') as handle:
     tokenizer = pickle.load(handle)
 # Print out prediction
-# print("Model predicted {} with a probability of {}".format(y_pred, y_pred_proba))
-
-# [Timeline, goal, cat, text, subcat]
-
-
-# 2 column layout. 1st column width = 4/12
-# https://dash-bootstrap-components.opensource.faculty.ai/l/components/layout
-# @app.callback(
-#     Output('prediction-content', 'children'),
-#     [Input('usd_goal', 'value'), 
-#     Input('category', 'value'),
-#     Input('timeline', 'value'),
-#     Input('sub_category', 'value'),
-#     Input('text', 'value'),
-#     ],
-# )
 def predict(usd_goal,category,timeline,sub_category,text):
     df = pd.DataFrame(
         columns=[0,
@@ -79,48 +63,22 @@ def predict(usd_goal,category,timeline,sub_category,text):
 
 column1 = dbc.Col(
     [
-        dcc.Markdown('## Kickstarter Campaign Parameters', className='mb-5'), 
+        dcc.Markdown('## Kickstarter Campaign Parameters', className='mb-5'),
+        # Creates a Goal input and pass the value
         dcc.Markdown('#### How much funding do you need to raise?'),
         daq.NumericInput(
             id = "usd_goal", min=100, max=10000000, value=1000,
             className='mb-5', size=540
 
             ),
-        # dcc.Input(
-        #     id="usd_goal", type="number", value=1000,
-        #     min=100, max=10000000, step=100, className='mb-5', style=dict(width='540px')
-
-
-        # dcc.Slider(
-        #     id='usd_goal', 
-        #     min=1000, 
-        #     max=1000000, 
-        #     step=1, 
-        #     value=800, 
-        #     marks={n: str(n) for n in range(1,1000001,100000)}, 
-        #     className='mb-5', 
-
-        # ), 
+        # Creates a Kickstert Funding Length input and pass the value
         dcc.Markdown('#### How long will your project be open for funding?'),
         daq.NumericInput(
             id = "timeline", min=10, max=365, value=30,
             className='mb-5', size=540
 
             ),
-        # dcc.Input(
-        #     id="timeline", type="number", value=30,
-        #     min=10, max=365, step=10, className='mb-5', style=dict(width='540px')
-
-        # dcc.Slider(
-        #     id='timeline', 
-        #     min=10, 
-        #     max=365, 
-        #     step=30, 
-        #     value=100, 
-        #     marks={n: str(n) for n in range(10,366,30)}, 
-        #     className='mb-5', 
-
-        # ), 
+        # Creates a category input and passes numerical value
         dcc.Markdown('#### What category is your project?'), 
         dcc.Dropdown(
             id='category',
@@ -145,7 +103,7 @@ column1 = dbc.Col(
         ],
         value=0
         ),
- 
+        # Creates a sub-category input and passes numerical value
         dcc.Markdown('#### What is the sub-category?'), 
         dcc.Dropdown(
             id='sub_category',
@@ -156,7 +114,8 @@ column1 = dbc.Col(
         ],
         value=0
         ), 
-        dcc.Markdown('#### Text'), 
+        # Takes text data and passes to the model
+        dcc.Markdown('#### Kickstarter Description'), 
         dcc.Textarea(
             id='text',
             placeholder='Enter a value...',
@@ -164,7 +123,7 @@ column1 = dbc.Col(
             style={'width': '100%'},
             className='mb-5',
         ), 
-        
+        # Adds a butotn that extracts the input values and passes to the model
         dbc.Button("Predict Kickstarter Success", id="example-button", color='primary',
                    className="mr-2"),
         html.Div(id='container-button-timestamp'),
@@ -174,6 +133,7 @@ column1 = dbc.Col(
     md=6,
 )
 
+# Set call back to be applied with button press.
 @app.callback(
     Output("prediction-content",
            "children"), [Input("example-button", 'n_clicks')],
@@ -183,16 +143,9 @@ column1 = dbc.Col(
         State('timeline', 'value'), 
         State('sub_category', 'value'),
         State('text', 'value'),
-        
-
-#     Output('prediction-content', 'children'),
-#     [Input('usd_goal', 'value'), 
-#     Input('category', 'value'),
-#     Input('timeline', 'value'),
-#     Input('sub_category', 'value'),
-#     Input('text', 'value'),
     ]
 )
+# Function that passes values to predict function on button click
 def on_button_click(n, timeline,usd_goal,category,text,sub_category):
     '''
     on_button_click function passes information from the model on clicl
@@ -202,12 +155,14 @@ def on_button_click(n, timeline,usd_goal,category,text,sub_category):
     else:
         return predict(timeline,usd_goal,category,text,sub_category)
 
+# Using a blank column for spacing
 column2 = dbc.Col(
     className='mb-40'
 )
 
 column3 = dbc.Col(
     [
+        # Create a lable and pass prediction value
         html.H2('Kickstarter Prediction', className='mb-4'),
         html.Div(id='prediction-content', className='lead')
     ],
