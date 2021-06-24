@@ -5,6 +5,7 @@ import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
+import dash_daq as daq
 from .newpage import sub_category_list
 # Imports from this application
 from app import app
@@ -68,11 +69,18 @@ def predict(usd_goal,category,timeline,sub_category,text):
 
 column1 = dbc.Col(
     [
-        dcc.Markdown('## Kickstarter Parameters', className='mb-5'), 
-        dcc.Markdown('#### How much funding do you need to raise?'), 
-        dcc.Input(
-            id="usd_goal", type="number", value=1000,
-            min=100, max=10000000, step=100, className='mb-5',
+        dcc.Markdown('## Kickstarter Campaign Parameters', className='mb-5'), 
+        dcc.Markdown('#### How much funding do you need to raise?'),
+        daq.NumericInput(
+            id = "usd_goal", min=100, max=10000000, value=1000,
+            className='mb-5', size=540
+
+            ),
+        # dcc.Input(
+        #     id="usd_goal", type="number", value=1000,
+        #     min=100, max=10000000, step=100, className='mb-5', style=dict(width='540px')
+
+
         # dcc.Slider(
         #     id='usd_goal', 
         #     min=1000, 
@@ -81,11 +89,18 @@ column1 = dbc.Col(
         #     value=800, 
         #     marks={n: str(n) for n in range(1,1000001,100000)}, 
         #     className='mb-5', 
-        ), 
+
+        # ), 
         dcc.Markdown('#### How long will your project be open for funding?'),
-        dcc.Input(
-            id="timeline", type="number", value=30,
-            min=10, max=365, step=10, className='mb-5',
+        daq.NumericInput(
+            id = "timeline", min=10, max=365, value=30,
+            className='mb-5', size=540
+
+            ),
+        # dcc.Input(
+        #     id="timeline", type="number", value=30,
+        #     min=10, max=365, step=10, className='mb-5', style=dict(width='540px')
+
         # dcc.Slider(
         #     id='timeline', 
         #     min=10, 
@@ -94,7 +109,8 @@ column1 = dbc.Col(
         #     value=100, 
         #     marks={n: str(n) for n in range(10,366,30)}, 
         #     className='mb-5', 
-        ), 
+
+        # ), 
         dcc.Markdown('#### What category is your project?'), 
         dcc.Dropdown(
             id='category',
@@ -134,7 +150,7 @@ column1 = dbc.Col(
         dcc.Textarea(
             id='text',
             placeholder='Enter a value...',
-            value='This is a TextArea component',
+            value='Please write a short description of your project ( < 50 words)',
             style={'width': '100%'},
             className='mb-5',
         ), 
