@@ -9,55 +9,33 @@ import dash_daq as daq
 from .newpage import sub_category_list
 # Imports from this application
 from app import app
-import pickle, json
+# import pickle, json
 import pandas as pd
 import numpy as np
-from tensorflow.keras.preprocessing.text import Tokenizer
-from tensorflow.keras.preprocessing import sequence
-from tensorflow import keras
+import requests
+import json
 
-# Unpickling tokenizer
-with open('ToSite/tokenizer.pickle', 'rb') as handle:
-    tokenizer = pickle.load(handle)
+# from tensorflow.keras.preprocessing.text import Tokenizer
+# from tensorflow.keras.preprocessing import sequence
+# from tensorflow import keras
+
+# # Unpickling tokenizer
+# with open('ToSite/tokenizer.pickle', 'rb') as handle:
+#     tokenizer = pickle.load(handle)
+
+url = 'https://kickstarterbackend.herokuapp.com/model'
 # Print out prediction
 def predict(usd_goal,category,timeline,sub_category,text):
-    df = pd.DataFrame(
-        columns=[0,
-        1,
-        2,
-        3,
-        4
-], 
-        data=[[timeline,usd_goal,category,text,sub_category]]
-        # data=[[usd_goal,category,timeline,sub_category,text]]
-    )
-    maxlen = 43 # Somewhat arbitrary at this point, neccessary however
-    seq = tokenizer.texts_to_sequences(df[3])
-    # seq2 = [i for s in seq for i in s]
-    padded_sequence = sequence.pad_sequences(seq, maxlen)
-    # Convert text to df columns (inelegant, but effective)
-    for j in range(5, 48):
-        f = j-5
-        df[j] = [padded_sequence[0][f]]
-    # Drop unencoded text column
-    df.drop(columns=[3], inplace=True)
-    # Convert df to numpy array, for further conversion to tensor
-    arr = df.to_numpy()
-    print(arr)  # DEV, delete before prod
-    # Reshape array into tensor
-    tarr = arr.reshape(1, 47, 1)
-    tarr = np.asarray(tarr).astype('float32')
-    # Loading in the model
-    model = keras.models.load_model('ToSite/models')
-    print(model.summary())
-    print(arr.shape)
-    # Formatting output from the model
-    y_pred_proba = round((model.predict(tarr)[0][0] * 100), 2)
-    if(y_pred_proba) >= 50:
+    print(category)
+    body = {"usd_goal":usd_goal, "term":timeline, "category":category, "blurb":text, "subcategory":sub_category}
+    response = requests.post(url, json=body, headers={"content-type":"application/json"})
+    y_pred_proba = float(response.json()['prediction'])
+    if(y_pred_proba) >= 0.5:
         y_pred = "Success predicted"
     else:
         y_pred = "Lack of success predicted"
 
+    print('{}, with a likelihood of {}%'.format(y_pred, y_pred_proba))
     return '{}, with a likelihood of {}%'.format(y_pred, y_pred_proba)
 
 
