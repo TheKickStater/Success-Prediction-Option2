@@ -56,10 +56,6 @@ column1 = dbc.Col(
 
             """
         ),
-        html.Img(src='example', className='img-fluid'),
-        html.Img(src='example', className='img-fluid'),
-        html.Img(src='example', className='img-fluid'),
-
         dcc.Markdown(""" 
         
 

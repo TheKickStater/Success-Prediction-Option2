@@ -6,6 +6,7 @@ import dash_core_components as dcc
 from app import app
 import pandas as pd
 
+# Hard coded sub category to save space for model on heroku
 sub_category_list = [(0, '3d Printing'), (1, 'Academic'), (2, 'Accessories'), (3, 'Action'),
  (4, 'Animals'), (5, 'Animation'), (6, 'Anthologies'), (7, 'Apparel'), (8, 'Apps'),
  (9, 'Architecture'), (10, 'Art'), (11, 'Art books'), (12, 'Audio'), (13, 'Bacon'),
@@ -43,66 +44,7 @@ sub_category_list = [(0, '3d Printing'), (1, 'Academic'), (2, 'Accessories'), (3
  (151, 'Wearables'), (152, 'Weaving'), (153, 'Web'), (154, 'Webcomics'), (155, 'Webseries'),
  (156, 'Woodworking'), (157, 'Workshops'), (158, 'World Music'), (159, 'Young Adult'), (160, 'Zines')]
 
-# def build_banner():
-#     return html.Div(
-#         id="banner",
-#         className="banner",
-#         children=[
-#             html.Div(
-#                 id="banner-text",
-#                 children=[
-#                     html.H5("Kickstarter Prediction"),
-#                 ],
-#             ),
-#         ],
-#     )
-
-
-# def build_tabs():
-#     return html.Div(
-#         id="tabs",
-#         className="tabs",
-#         children=[
-#             dcc.Tabs(
-#                 id="app-tabs",
-#                 value="tab2",
-#                 className="custom-tabs",
-#                 children=[
-#                     dcc.Tab(
-#                         id="Kickstarter-Paramters",
-#                         label="Kickstarter Parameters",
-#                         value="tab1",
-#                         className="custom-tab",
-#                         selected_className="custom-tab--selected",
-#                     ),
-#                     dcc.Tab(
-#                         id="Kickstarter-Details",
-#                         label="Kickstarter Details",
-#                         value="tab2",
-#                         className="custom-tab",
-#                         selected_className="custom-tab--selected",
-#                     ),
-#                 ],
-#             )
-#         ],
-#     )
-
-
-# app.layout = html.Div(
-#     id="big-app-container",
-#     children=[
-#         build_banner(),
-#         html.Div(
-#             id="app-container",
-#             children=[
-#                 build_tabs(),
-#                 # Main app
-#                 html.Div(id="app-content"),
-#             ],
-#         ),
-#     ],
-# )
-
+# Started creating tabs for stretch goal interaction
 app.layout = html.Div([
     dcc.Tabs(
         id="tabs-with-classes",

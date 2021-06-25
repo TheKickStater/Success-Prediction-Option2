@@ -35,15 +35,10 @@ column1 = dbc.Col(
     md=4,
 )
 
-gapminder = px.data.gapminder()
-fig = px.scatter(gapminder.query("year==2007"), x="gdpPercap", y="lifeExp", size="pop", color="continent",
-           hover_name="country", log_x=True, size_max=60)
-# Example graph
-
 column2 = dbc.Col(
     [
-        # html.Img(src='graph_todo', className='img-fluid')
-        dcc.Graph(figure=fig),
+        html.Img(src='assets/crowdfunding.png', className='img-fluid')
+
     ]
 )
 
