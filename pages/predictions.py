@@ -15,18 +15,10 @@ import numpy as np
 import requests
 import json
 
-# from tensorflow.keras.preprocessing.text import Tokenizer
-# from tensorflow.keras.preprocessing import sequence
-# from tensorflow import keras
-
-# # Unpickling tokenizer
-# with open('ToSite/tokenizer.pickle', 'rb') as handle:
-#     tokenizer = pickle.load(handle)
 
 url = 'https://kickstarterbackend.herokuapp.com/model'
-# Print out prediction
+# Calls prediction from external model by providing api call with values.
 def predict(usd_goal,category,timeline,sub_category,text):
-    # print(category)
     body = {"usd_goal":usd_goal, "term":timeline, "category":category, "blurb":text, "subcategory":sub_category}
     response = requests.post(url, json=body, headers={"content-type":"application/json"})
     y_pred_proba = float(response.json()['prediction'])
@@ -34,8 +26,6 @@ def predict(usd_goal,category,timeline,sub_category,text):
         y_pred = "Success predicted"
     else:
         y_pred = "Lack of success predicted"
-    # Used to trouble shoot.
-    # print('{}, with a likelihood of {}%'.format(y_pred, y_pred_proba))
     return y_pred, y_pred_proba
 
 
@@ -86,10 +76,6 @@ column1 = dbc.Col(
         dcc.Dropdown(
             id='sub_category',
             className='mb-5',
-            options=[
-                {'label': label, 'value': value}
-                    for value, label in sub_category_list
-        ],
         value=0
         ), 
         # Takes text data and passes to the model
@@ -181,3 +167,17 @@ column3 = dbc.Col(
     md=5
 )
 layout = dbc.Row([column1, column2, column3])
+
+# Creates options for sub category based on category list
+@app.callback(
+    Output('sub_category', 'options'),
+    Input('category', 'value'))
+def set_cities_options(select_category):
+    return sub_category_list[select_category]
+
+# Inputs sub category options into dropdown menu
+@app.callback(
+    Output('sub_category', 'value'),
+    Input('sub_category', 'options'))
+def set_cities_value(available_options):
+    return available_options[0]['value']
