@@ -26,7 +26,7 @@ import json
 url = 'https://kickstarterbackend.herokuapp.com/model'
 # Print out prediction
 def predict(usd_goal,category,timeline,sub_category,text):
-    print(category)
+    # print(category)
     body = {"usd_goal":usd_goal, "term":timeline, "category":category, "blurb":text, "subcategory":sub_category}
     response = requests.post(url, json=body, headers={"content-type":"application/json"})
     y_pred_proba = float(response.json()['prediction'])
@@ -34,9 +34,9 @@ def predict(usd_goal,category,timeline,sub_category,text):
         y_pred = "Success predicted"
     else:
         y_pred = "Lack of success predicted"
-
-    print('{}, with a likelihood of {}%'.format(y_pred, y_pred_proba))
-    return '{}, with a likelihood of {}%'.format(y_pred, y_pred_proba)
+    # Used to trouble shoot.
+    # print('{}, with a likelihood of {}%'.format(y_pred, y_pred_proba))
+    return y_pred, y_pred_proba
 
 
 column1 = dbc.Col(
@@ -131,7 +131,32 @@ def on_button_click(n, timeline,usd_goal,category,text,sub_category):
     if n is None:
         return "Please fill in the Kickstarter Model"
     else:
-        return predict(timeline,usd_goal,category,text,sub_category)
+        y_pred, y_pred_proba = predict(timeline,usd_goal,category,text,sub_category)
+        return '{}, with a likelihood of {}%'.format(y_pred, y_pred_proba)
+
+# Create another callback for gauge probability
+@app.callback(
+    Output("my-gauge",
+           "value"), [Input("example-button", 'n_clicks')],
+    [
+        State('usd_goal', 'value'),
+        State('category', 'value'),
+        State('timeline', 'value'), 
+        State('sub_category', 'value'),
+        State('text', 'value'),
+    ]
+)
+# Pass predict function to retrive y_pred_proba
+def predict_button_click(n_clicks, timeline,usd_goal,category,text,sub_category):
+    '''
+    on_button_click function passes information from the model on clicl
+    '''
+    y_pred, y_pred_proba = predict(timeline,usd_goal,category,text,sub_category)
+    y_pred_proba = y_pred_proba * 100
+    if n_clicks == None:
+        return 0
+    else:
+        return y_pred_proba
 
 # Using a blank column for spacing
 column2 = dbc.Col(
@@ -142,13 +167,17 @@ column3 = dbc.Col(
     [
         # Create a lable and pass prediction value
         html.H2('Kickstarter Prediction', className='mb-4'),
-        html.Div(id='prediction-content', className='lead')
+        html.Div(id='prediction-content', className='lead'),
+        daq.Gauge(
+            id= 'my-gauge',
+            color={"gradient":True,"ranges":{"red":[0,60],"yellow":[60,80],"green":[80,100]}},
+            value= 0,
+            label='',
+            max=100,
+            min=0,
+        )
     ],
     className='mb-40',
     md=5
-
 )
-
-
 layout = dbc.Row([column1, column2, column3])
-
