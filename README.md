@@ -4,9 +4,8 @@ This project employs a Keras LSTM (2-layer at the moment) to predict future Kick
 
 The api server is storing the keras model
 
-Flask backend server is storing and running a keras model, expects input from POST and returns a prediction in json body
+Flask backend server is storing and running a keras model, expects input from POST and returns a prediction in json
 
-																									  _      _
 -- When using requirements.txt, it may be neccessary to install dash individually after venv creation. \('')/
 																										 ||
 																										 /\
